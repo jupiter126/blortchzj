@@ -42,3 +42,4 @@ while [[ "$panswer" != "" ]]; do
 		echo " "
 	fi
 done
+clear
