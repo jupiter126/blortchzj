@@ -12,15 +12,24 @@ fi
 for i in losetup cryptsetup; do # check for dependencies
 	if [[ "$(command -v $i)" = "" ]]; then
 		echo "$red $i is required, please install and retry$def"
-		exit 1
+		exit 2
 	fi
 done
+
+function f_stop_test {
+echo "did it work?"
+read testanswer
+if [[ "$testanswer" != "y"  ]]; then
+	exit 3
+fi
+}
 
 function f_create_safe { # used to create a safe file
 echo "$mag If you screw one of the questions, just hit ^C$def"
 echo "$yel what shall be the safe's name?$def"
+echo "Hint: help yourself and avoid spaces and special characters."
 read sname
-echo "$yel MAX space allocatable to safe? (in Gb)"
+echo "$yel MAX space allocatable to safe? (in Gb)$def"
 read smaxsize
 echo "$yel Initiating state with blortchjz - COPY YOUR PASSWORD, IT WILL BE ASKED A COUPLE OF TIMES IN THE NEXT STEPS!!!$def"
 source blortchzj.sh 200
@@ -45,31 +54,44 @@ sleep 2 && echo "$gre Safe $sname: Initialisation complete$def"
 }
 
 function f_open_safe { # used to mount a safe file
-echo "$gre Please tell me the name of the safe you would like to use$def"
-ls -d */
-read $sname
-sloop="$(losetup -f)"
-losetup $sloop $sname.img
 echo "$yel get your password with blortchjz - COPY YOUR PASSWORD, IT WILL BE ASKED IN THE NEXT STEP!$def"
 source blortchzj.sh 200
-cryptsetup luksOpen /dev/loop0 $sname && sleep 3 && echo "step 1/2 complete"
+echo "$gre Please tell me the name of the safe you would like to use$def"
+ls -d */|sed 's/\///'
+read sname
+sloop="$(losetup -f)"
+losetup $sloop $sname.img
+cryptsetup luksOpen $sloop $sname && sleep 3 && echo "step 1/2 complete"
 mount /dev/mapper/$sname $sname && sleep 3 && echo "$gre Safe mount complete$def"
 }
 
-function f_close_safe { #used to unmount a safe file
-umount /dev/mapper/$sname $sname
-cryptsetup luksClose /dev/mapper/$sname
-losetup -d /dev/loop0
+function f_close_safe { #used to unmount a safe file - can be called with $sname as parameter
+if [[ "$1" = "" ]]; then
+	echo "$gre Which safe would you like to close?$def"
+	ls -d */|sed 's/\///'
+	read sname
+fi
+if [[ "$(df|grep $sname)" != "" ]]; then
+	umount /dev/mapper/$sname && sleep 2
+fi
+if [[ -f /dev/mapper/$sname ]]; then
+	cryptsetup luksClose /dev/mapper/$sname && sleep 2
+fi
+losetupstate="$(losetup -l|grep $sname|cut -f1 -d' ')"
+if [[ "$losetupstate" != "" ]]; then
+	losetup -d $losetupstate && sleep 2
+fi
+echo "$gre Safe $sname has been closed safely"
 }
 
 function f_delete_safe { #used to delete a safe file
 echo "$gre Which safe would you like to delete?$def"
-ls -d */
-read $sname
+ls -d */|sed 's/\///'
+read sname
 echo "delete safe $sname? say YES to confirm"
 read delanswer
 if [[ "$delanswer" = "YES"  ]]; then
-	
+	f_close_safe $sname && rm -Rf $sname.img $sname && echo "$gre Safe $sname has been deleted"
 fi
 delanswer=""
 }
@@ -78,7 +100,7 @@ function m_main { # Main Menu
 while [ 1 ]
 do
 	echo "$cya It is recomended getting familiar to blortchzj before securing important files here$def"
-	PS3='$gre Choose a number: $def'
+	PS3="$gre Choose a number: $def"
 	select choix in "create_safe" "open_safe" "close_safe" "delete_safe" "Quit"
 	do
 		echo " ";echo "####################################";echo " "
@@ -86,9 +108,9 @@ do
 	done
 	case $choix in
 		create_safe) 	f_create_safe ;;
-		open_safe)	echo open ;;
-		close_safe)	echo close ;;
-		delete_safe)	echo delete ;;
+		open_safe)	f_open_safe ;;
+		close_safe)	f_close_safe ;;
+		delete_safe)	f_delete_safe ;;
 		Quit)		echo bye;exit ;;
 		*)		echo "Same player shoot again" ;;
 	esac

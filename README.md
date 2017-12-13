@@ -1,6 +1,5 @@
 #blortchzj: <br />
-A Stupid Password Manager<br />
-#ALPHA DEV VERSION - DO NOT USE
+A Stupid Password Manager (and a dumb crypted partition manager)<br />
 <br />
 The name was chosen because it was unlikely.<br />
 I wrote this script because on the one hand I am bad at remembering an army of strong passwords, while at the same time, I often need to connect to services from abroad.<br />
