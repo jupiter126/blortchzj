@@ -43,3 +43,8 @@ while [[ "$panswer" != "" ]]; do
 	fi
 done
 clear
+echo "$red For security concerns, please close this window (someone could scroll up)$def"
+echo " "
+echo "$gre For security concerns, please close this window (someone could scroll up)$def"
+echo " "
+echo "$yel For security concerns, please close this window (someone could scroll up)$def"
