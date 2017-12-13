@@ -38,7 +38,7 @@ while [[ "$panswer" != "" ]]; do
 	read panswer
 	if [[ "$panswer" != ""  ]]; then
 		pppasss="$ppass-$panswer"
-		echo "$red $(echo $pppasss|md5sum|sha512sum|base64|head -c$plength)$def"
+		echo "$red $(echo $pppasss|md5sum|sha512sum|base64|head -c$plength|tr -d '\r\n')$def"
 		echo " "
 	fi
 done
