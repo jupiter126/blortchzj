@@ -38,6 +38,7 @@ sleep 5
 echo "$red now is too late - if you screwed up, wait for completion and then delete safe through the menu$def"
 dd of=$sname.img bs=1G count=0 seek=$smaxsize
 mkdir $sname
+echo "$(cryptsetup --version;losetup --version)">$sname.info
 sloop="$(losetup -f)"
 losetup $sloop $sname.img
 sleep 2 && echo "step 1/6 complete"
@@ -91,7 +92,7 @@ read sname
 echo "delete safe $sname? say YES to confirm"
 read delanswer
 if [[ "$delanswer" = "YES"  ]]; then
-	f_close_safe $sname && rm -Rf $sname.img $sname && echo "$gre Safe $sname has been deleted"
+	f_close_safe $sname && rm -Rf $sname.* $sname && echo "$gre Safe $sname has been deleted"
 fi
 delanswer=""
 }
