@@ -23,7 +23,7 @@ if [[ "$panswer" = "" ]]; then
 fi
 ppass="$ppass-$panswer"
 while [[ "$panswer" != "" ]]; do
-	echo "Anything more to tell me?"
+	echo "Anything more to tell me? (once done, press enter on a blank line to go to next step)"
 	read panswer
 	ppass="$ppass-$panswer"
 done
@@ -31,7 +31,7 @@ panswer="lol"
 #retrieve your passwords
 echo "I hope I know enough, now I'll give you passwords"
 while [[ "$panswer" != "" ]]; do
-	echo "What pass would you like to know?"
+	echo "What pass would you like to know? (once done, press enter on a blank line to exit script)"
 	read panswer
 	if [[ "$panswer" != ""  ]]; then
 		pppasss="$ppass-$panswer"
