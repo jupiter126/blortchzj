@@ -48,3 +48,8 @@ give it your name and say : I was born on 12.12.2017<br />
 NOTE:  this program is stupid: each character and space counts: change a letter to capital, add a comma or a dot and nothing is the same.<br />
 NOTE2: this program is right, if password is wrong, then it is you who are wrong ;)<br />
 NOTE3: for the geeks, you can easily change the hash functions called in the script for a personalised version ;p<br />
+
+
+
+fslartchzj is used to make an encrypted filesystem and uses blortchzj for its password.
+These are usually the first things I copy on an usb stick ;p
