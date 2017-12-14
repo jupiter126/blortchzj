@@ -6,13 +6,18 @@ def=$(tput sgr0);bol=$(tput bold);red=$(tput setaf 1;tput bold);gre=$(tput setaf
 echo "$yel oh no! my name is $pname, please rename me for enthropy's sake!$def"
 echo "$gre Please tell me my new name:$def"
 read pname
-if [[ "$1" != "" ]]; then
+if [[ "$1" != "" ]]; then #first param (optional) is pass length
 	re='^[0-9]+$'
 	if ! [[ $1 =~ $re ]] ; then
 		echo "error param is not a number: Not a number" >&2; exit 1
 	else
 		plength="$1"
 	fi
+fi
+if [[ "$2" = "1" ]]; then #second param (optional) enables "script mode" - requires 1st param to be set...
+	scriptmode="1"
+else
+	scriptmode="0"
 fi
 ppass="$pname"
 # Feed stuff to app to initialise
@@ -22,12 +27,6 @@ if [[ "$panswer" = "" ]]; then
 	echo "No text, no pass..."
 	exit 2
 fi
-##debug
-#echo "$ppass-$panswer"
-#echo $(echo "$ppass-$panswer"|sha512sum)
-#echo $(echo "$ppass-$panswer"|sha512sum|base64)
-#echo $(echo "$ppass-$panswer"|sha512sum|base64|tr -d '\r\n')
-##EOdebug
 ppass=$(echo "$ppass-$panswer"|sha512sum|base64|tr -d '\r\n')
 echo "$bol Once done, press enter on a blank line to go to next step$def"
 while [[ "$panswer" != "" ]]; do
@@ -48,10 +47,15 @@ while [[ "$panswer" != "" ]]; do
 		echo "$red $(echo $pppasss|sha512sum|base64|head -c$plength|tr -d '\r\n')$def"
 		echo " "
 	fi
+	if [[ "$scriptmode" = "1" ]]; then
+		panswer=""
+	fi
 done
-clear
-echo "$red For security concerns, please close this window (someone could scroll up)$def"
-echo " "
-echo "$gre For security concerns, please close this window (someone could scroll up)$def"
-echo " "
-echo "$yel For security concerns, please close this window (someone could scroll up)$def"
+if [[ "$scriptmode" != "1" ]]; then
+	clear
+	echo "$red For security concerns, please close this window (someone could scroll up)$def"
+	echo " "
+	echo "$gre For security concerns, please close this window (someone could scroll up)$def"
+	echo " "
+	echo "$yel For security concerns, please close this window (someone could scroll up)$def"
+fi

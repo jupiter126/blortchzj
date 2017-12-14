@@ -16,13 +16,16 @@ for i in losetup cryptsetup; do # check for dependencies
 	fi
 done
 
-function f_stop_test {
-echo "did it work?"
-read testanswer
-if [[ "$testanswer" != "y"  ]]; then
-	exit 3
-fi
+function f_exit {
+clear
+echo "$red For security concerns, please close this window (someone could scroll up)$def"
+echo " "
+echo "$gre For security concerns, please close this window (someone could scroll up)$def"
+echo " "
+echo "$yel For security concerns, please close this window (someone could scroll up)$def"
 }
+
+
 
 function f_create_safe { # used to create a safe file
 echo "$mag If you screw one of the questions, just hit ^C$def"
@@ -41,16 +44,20 @@ mkdir $sname
 echo "$(cryptsetup --version;losetup --version)">$sname.info
 sloop="$(losetup -f)"
 losetup $sloop $sname.img
-sleep 2 && echo "step 1/6 complete"
+sleep 2 && echo "step 1/8 complete"
 cryptsetup -y luksFormat $sloop
-sleep 2 && echo "step 2/6 complete"
+sleep 2 && echo "step 2/8 complete"
 cryptsetup luksOpen $sloop $sname
-sleep 2 && echo "step 3/6 complete"
+sleep 2 && echo "step 3/8 complete"
 mkfs.ext4 /dev/mapper/$sname
-sleep 2 && echo "step 4/6 complete"
+sleep 2 && echo "step 4/8 complete"
 cryptsetup luksClose /dev/mapper/$sname
-sleep 2 && echo "step 5/6 complete"
+sleep 2 && echo "step 5/8 complete"
+dmsetup remove /dev/mapper/$sname
+sleep 2 && echo "step 6/8 complete"
 losetup -d $sloop
+sleep 2 && echo "step 7/8 complete"
+sha512sum $sname.img > $sname.img.sha512sum
 sleep 2 && echo "$gre Safe $sname: Initialisation complete$def"
 }
 
@@ -60,6 +67,15 @@ source blortchzj.sh 200
 echo "$gre Please tell me the name of the safe you would like to use$def"
 ls -d */|sed 's/\///'
 read sname
+if [[ "$(sha512sum -c $sname.img.sha512sum|cut -f2 -d' ')" != "OK" ]]; then
+	echo "$red Checksum ERROR type YES if you are sure you want to continue - anything else to stop$def"
+	read keeponerror
+	if [[ "$keeponerror" != "YES" ]]; then
+		f_exit
+	fi
+else
+	echo "$gre Checksum correct, continuing"
+fi
 sloop="$(losetup -f)"
 losetup $sloop $sname.img
 cryptsetup luksOpen $sloop $sname && sleep 3 && echo "step 1/2 complete"
@@ -75,14 +91,16 @@ fi
 if [[ "$(df|grep $sname)" != "" ]]; then
 	umount /dev/mapper/$sname && sleep 2
 fi
-if [[ -f /dev/mapper/$sname ]]; then
+if [[ "$(ls /dev/mapper/$sname 2>/dev/null)" != "" ]]; then
 	cryptsetup luksClose /dev/mapper/$sname && sleep 2
 fi
 losetupstate="$(losetup -l|grep $sname|cut -f1 -d' ')"
 if [[ "$losetupstate" != "" ]]; then
 	losetup -d $losetupstate && sleep 2
 fi
-echo "$gre Safe $sname has been closed safely"
+echo "$gre Safe $sname has been closed - patience - creating checksum. . ."
+sha512sum $sname.img > $sname.img.sha512sum
+echo "$gre Checksum created for $sname"
 }
 
 function f_delete_safe { #used to delete a safe file
@@ -112,7 +130,7 @@ do
 		open_safe)	f_open_safe ;;
 		close_safe)	f_close_safe ;;
 		delete_safe)	f_delete_safe ;;
-		Quit)		echo bye;exit ;;
+		Quit)		f_exit ;;
 		*)		echo "Same player shoot again" ;;
 	esac
 done
