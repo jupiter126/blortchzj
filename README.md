@@ -1,14 +1,13 @@
 # blortchzj: <br />
 A Stupid Password Manager (and a dumb crypted partition manager)<br />
 # Credits:<br />
-fslartchzj was  "Immensely inspired by"/"dominantly copied from" "Damiano Verzulli"'s answer on https://serverfault.com/questions/696554/creating-a-grow-on-demand-encrypted-volume-with-luks?newreg=97523e0057a84e468fcf58ccb078708a
 <br />
 The name was chosen because it was unlikely.<br />
 I wrote this script because on the one hand I am bad at remembering an army of strong passwords, while at the same time, I often need to connect to services from abroad.<br />
 After years of being torn between the idea of storing my passwords in an unsafe place and using the same passwords at many places, I came up with this simple idea:<br />
 We are bad with passwords, but good with emotions: let's apply a solid hash to an easy password, in an emotional context that is unique to each one<br />
 <br />
-#Usage:<br />
+# Usage:<br />
 blortchzj will ask you for its name.<br />
 The idea is that you chose a familiar name that you can associate to a phrase or set of phrases that you will remember: this will act as "seed".<br />
 As the script does not save anything anywhere, you will have to remember how you initiate it to generate your passwords.<br />
