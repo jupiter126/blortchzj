@@ -22,12 +22,19 @@ if [[ "$panswer" = "" ]]; then
 	echo "No text, no pass..."
 	exit 2
 fi
-ppass="$ppass-$panswer"
+##debug
+#echo "$ppass-$panswer"
+#echo $(echo "$ppass-$panswer"|sha512sum)
+#echo $(echo "$ppass-$panswer"|sha512sum|base64)
+#echo $(echo "$ppass-$panswer"|sha512sum|base64|tr -d '\r\n')
+##EOdebug
+ppass=$(echo "$ppass-$panswer"|sha512sum|base64|tr -d '\r\n')
 echo "$bol Once done, press enter on a blank line to go to next step$def"
 while [[ "$panswer" != "" ]]; do
 	echo "$gre Anything more to tell me?$def"
 	read panswer
-	ppass="$ppass-$panswer"
+	ppass=$(echo "$ppass-$panswer"|sha512sum|base64|tr -d '\r\n')
+#echo $ppass
 done
 panswer="lol"
 #retrieve your passwords
@@ -38,7 +45,7 @@ while [[ "$panswer" != "" ]]; do
 	read panswer
 	if [[ "$panswer" != ""  ]]; then
 		pppasss="$ppass-$panswer"
-		echo "$red $(echo $pppasss|md5sum|sha512sum|base64|head -c$plength|tr -d '\r\n')$def"
+		echo "$red $(echo $pppasss|sha512sum|base64|head -c$plength|tr -d '\r\n')$def"
 		echo " "
 	fi
 done
