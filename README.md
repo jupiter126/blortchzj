@@ -1,5 +1,7 @@
 #blortchzj: <br />
 A Stupid Password Manager (and a dumb crypted partition manager)<br />
+#Credits:
+# fslartchzj was  "Immensely inspired by"/"dominantly copied from" "Damiano Verzulli"'s answer on https://serverfault.com/questions/696554/creating-a-grow-on-demand-encrypted-volume-with-luks?newreg=97523e0057a84e468fcf58ccb078708a
 <br />
 The name was chosen because it was unlikely.<br />
 I wrote this script because on the one hand I am bad at remembering an army of strong passwords, while at the same time, I often need to connect to services from abroad.<br />
