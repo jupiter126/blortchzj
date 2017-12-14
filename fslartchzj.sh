@@ -64,7 +64,7 @@ sleep 2 && echo "$gre Safe $sname: Initialisation complete$def"
 
 function f_open_safe { # used to mount a safe file
 echo "$yel get your password with blortchjz - COPY YOUR PASSWORD, IT WILL BE ASKED IN THE NEXT STEP!$def"
-source blortchzj.sh 200
+source blortchzj.sh 200 1
 echo "$gre Please tell me the name of the safe you would like to use$def"
 ls -d */|sed 's/\///'
 read sname
