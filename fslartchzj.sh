@@ -23,6 +23,7 @@ echo " "
 echo "$gre For security concerns, please close this window (someone could scroll up)$def"
 echo " "
 echo "$yel For security concerns, please close this window (someone could scroll up)$def"
+exit
 }
 
 
@@ -35,7 +36,7 @@ read sname
 echo "$yel MAX space allocatable to safe? (in Gb)$def"
 read smaxsize
 echo "$yel Initiating state with blortchjz - COPY YOUR PASSWORD, IT WILL BE ASKED A COUPLE OF TIMES IN THE NEXT STEPS!!!$def"
-source blortchzj.sh 200
+source blortchzj.sh 200 1
 echo "$red Starting safe creation in 5 seconds, now is still time to press ^C$def"
 sleep 5
 echo "$red now is too late - if you screwed up, wait for completion and then delete safe through the menu$def"
