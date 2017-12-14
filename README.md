@@ -1,6 +1,6 @@
 # blortchzj: <br />
 A Stupid Password Manager (and a dumb crypted partition manager)<br />
-#Credits:
+# Credits:<br />
 fslartchzj was  "Immensely inspired by"/"dominantly copied from" "Damiano Verzulli"'s answer on https://serverfault.com/questions/696554/creating-a-grow-on-demand-encrypted-volume-with-luks?newreg=97523e0057a84e468fcf58ccb078708a
 <br />
 The name was chosen because it was unlikely.<br />
@@ -13,7 +13,7 @@ blortchzj will ask you for its name.<br />
 The idea is that you chose a familiar name that you can associate to a phrase or set of phrases that you will remember: this will act as "seed".<br />
 As the script does not save anything anywhere, you will have to remember how you initiate it to generate your passwords.<br />
 <br />
-#Example: <br />
+# Example: <br />
 <br />
 $ ./blortchzj.sh <br />
 oh no! my name is blortchzj, please rename me for enthropy's sake!<br />
