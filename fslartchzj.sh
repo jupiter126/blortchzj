@@ -42,7 +42,7 @@ sleep 5
 echo "$red now is too late - if you screwed up, wait for completion and then delete safe through the menu$def"
 dd of=$sname.img bs=1G count=0 seek=$smaxsize
 mkdir $sname
-echo "$(cryptsetup --version;losetup --version)">$sname.info
+echo "$(cryptsetup --version;losetup --version)">$sname.img.info
 sloop="$(losetup -f)"
 losetup $sloop $sname.img
 sleep 2 && echo "step 1/8 complete"
