@@ -31,7 +31,7 @@ exit
 function f_create_safe { # used to create a safe file
 echo "$mag If you screw one of the questions, just hit ^C$def"
 echo "$yel what shall be the safe's name?$def"
-echo "Hint: help yourself and avoid spaces and special characters."
+echo "Hint: help yourself and avoid spaces,- and special characters."
 read sname
 echo "$yel MAX space allocatable to safe? (in Gb)$def"
 read smaxsize
