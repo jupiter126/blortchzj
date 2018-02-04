@@ -55,3 +55,5 @@ NOTE3: for the geeks, you can easily change the hash functions called in the scr
 
 # fslartchzj is used to make an encrypted filesystem and uses blortchzj for its password.
 These are usually the first things I copy on an usb stick ;p
+
+# checkbattery.sh is used for integration with battery and autoshutdown
