@@ -26,13 +26,24 @@ echo "$yel For security concerns, please close this window (someone could scroll
 exit
 }
 
-
+function f_check_doubles { #small test to prevent potential screwups
+if [[ "$(ls $sname-*.img|wc -l)" != "1" ]]; then
+	echo "$sname-*.img not good"
+fi
+if [[ "$(ls $sname-*.img|wc -l)" != "1" ]]; then
+	echo "$sname-*.img.sha512sum not good"
+fi
+}
 
 function f_create_safe { # used to create a safe file
 echo "$mag If you screw one of the questions, just hit ^C$def"
 echo "$yel what shall be the safe's name?$def"
-echo "Hint: help yourself and avoid spaces and special characters."
+echo "Hint: Underscore (_) is the only recommended 'special character' for name"
 read sname
+if [[ "$(ls $sname*.img)" != "" ]]; then
+	echo "$sname allready exists..."
+	exit 1
+fi
 echo "$yel MAX space allocatable to safe? (in Gb)$def"
 read smaxsize
 echo "$yel Initiating state with blortchjz - COPY YOUR PASSWORD, IT WILL BE ASKED A COUPLE OF TIMES IN THE NEXT STEPS!!!$def"
@@ -42,10 +53,11 @@ sleep 5
 echo "$red now is too late - if you screwed up, wait for completion and then delete safe through the menu$def"
 dd of=$sname.img bs=1G count=0 seek=$smaxsize
 mkdir $sname
-echo "$(cryptsetup --version;losetup --version)">$sname.info
+ddate=$(date +%Y%m%d%H%M)
+echo "$(cryptsetup --version;losetup --version)">$sname-$ddate.img.info
 sloop="$(losetup -f)"
 losetup $sloop $sname.img
-sleep 2 && echo "step 1/8 complete"
+sleep 2 && echo "step 1/8 complete $red DO A CAPITAL YES HERE!!!$def"
 cryptsetup -y luksFormat $sloop
 sleep 2 && echo "step 2/8 complete"
 cryptsetup luksOpen $sloop $sname
@@ -58,7 +70,8 @@ dmsetup remove /dev/mapper/$sname
 sleep 2 && echo "step 6/8 complete"
 losetup -d $sloop
 sleep 2 && echo "step 7/8 complete"
-sha512sum $sname.img > $sname.img.sha512sum
+mv $sname.img $sname-$ddate.img
+sha512sum $sname-$ddate.img > $sname-$ddate.img.sha512sum
 sleep 2 && echo "$gre Safe $sname: Initialisation complete$def"
 }
 
@@ -68,17 +81,20 @@ source blortchzj.sh 200 1
 echo "$gre Please tell me the name of the safe you would like to use$def"
 ls -d */|sed 's/\///'
 read sname
-if [[ "$(sha512sum -c $sname.img.sha512sum|cut -f2 -d' ')" != "OK" ]]; then
+f_check_doubles
+imgfile=$(ls $sname-*.img)
+shafile=$(ls $sname-*.img.sha512sum)
+if sha512sum -c $shafile; then
+	echo "$gre Checksum correct, continuing$def"
+else
 	echo "$red Checksum ERROR type YES if you are sure you want to continue - anything else to stop$def"
 	read keeponerror
 	if [[ "$keeponerror" != "YES" ]]; then
 		f_exit
 	fi
-else
-	echo "$gre Checksum correct, continuing"
 fi
 sloop="$(losetup -f)"
-losetup $sloop $sname.img
+losetup $sloop $imgfile
 cryptsetup luksOpen $sloop $sname && sleep 3 && echo "step 1/2 complete"
 mount /dev/mapper/$sname $sname && sleep 3 && echo "$gre Safe mount complete$def"
 }
@@ -89,6 +105,9 @@ if [[ "$1" = "" ]]; then
 	ls -d */|sed 's/\///'
 	read sname
 fi
+f_check_doubles
+oldimgfile=$(ls $sname-*.img)
+oldshafile=$(ls $sname-*.img.sha512sum)
 if [[ "$(df|grep $sname)" != "" ]]; then
 	umount /dev/mapper/$sname && sleep 2
 fi
@@ -99,22 +118,37 @@ losetupstate="$(losetup -l|grep $sname|cut -f1 -d' ')"
 if [[ "$losetupstate" != "" ]]; then
 	losetup -d $losetupstate && sleep 2
 fi
-echo "$gre Safe $sname has been closed - patience - creating checksum. . ."
-sha512sum $sname.img > $sname.img.sha512sum
-echo "$gre Checksum created for $sname"
+echo "$gre Safe $sname has been closed - patience - creating checksum. . .$def"
+ddate=$(date +%Y%m%d%H%M)
+newimgfile="$sname-$ddate.img"
+newshafile="$sname-$ddate.img.sha512sum"
+mv "$oldimgfile" "$newimgfile" && rm "$oldshafile"
+sha512sum $newimgfile > $newshafile
+echo "$gre Checksum created for $sname$def"
 }
 
 function f_delete_safe { #used to delete a safe file
 echo "$gre Which safe would you like to delete?$def"
 ls -d */|sed 's/\///'
 read sname
+f_check_doubles
 echo "delete safe $sname? say YES to confirm"
 read delanswer
 if [[ "$delanswer" = "YES"  ]]; then
-	f_close_safe $sname && rm -Rf $sname.* $sname && echo "$gre Safe $sname has been deleted"
+	f_close_safe $sname && rm -Rf $sname.* $sname && echo "$gre Safe $sname has been deleted$def"
 fi
 delanswer=""
 }
+
+function f_closeall {
+for sname in $(ls /dev/mapper/); do
+	if [[ "$sname" != "control" ]] && [[ "$sname" != "dmroot" ]]; then
+		f_close_safe $sname
+	fi
+done
+echo "All safes are closed"
+}
+
 
 function m_main { # Main Menu
 while [ 1 ]
@@ -136,5 +170,10 @@ do
 	esac
 done
 }
+
+if [[ "$1" = "closeall" ]]; then
+	f_closeall
+	exit
+fi
 
 m_main
